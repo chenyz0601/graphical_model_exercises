@@ -9,7 +9,7 @@ x1 = 218;
 x2 = 475;
 y1 = 278;
 y2 = 358;
-itermax = 10;
+itermax = 30;
 K = 5;
 
 %% foreground
@@ -38,10 +38,29 @@ figure(2);
 imshow(img_result);
 
 %% maxflow
-mask = 1:M*N;
+% construct graph
+M=3;
+N=3;
+mask = 2:M*N+1;
 mask = reshape(mask, M, N);
-in_mask = zeros(M-2, N-2, 4);
+in_mask = zeros(M-2, N-2, 5);
 in_mask(:,:,1) = mask(1:M-2,2:N-1);
 in_mask(:,:,2) = mask(3:M,2:N-1);
 in_mask(:,:,3) = mask(2:M-1,1:N-2);
 in_mask(:,:,4) = mask(2:M-1,3:N);
+in_mask(:,:,5) = (M*N+2)*ones(M-2,N-2);
+in_mask_util = reshape(in_mask,[(M-2)*(N-2),5]);
+in_mask_util = in_mask_util';
+t2 = in_mask_util(:);
+crop_mask = mask(2:M-1,2:N-1);
+t1 = crop_mask(:);
+s2_util = repmat(t1,1,5);
+s2_util = s2_util';
+s2 = s2_util(:);
+s1 = ones(M*N,1);
+boundary = [mask(1,:) mask(M,:) mask(2:M-1,1)' mask(2:M-1,N)'];
+s = [s1; s2; boundary'];
+t = [t1; boundary'; t2; (M*N+2)*ones(size(boundary))'];
+weights = rand(size(t));
+G = digraph(s,t,weights);
+plot(G,'EdgeLabel',G.Edges.Weight,'Layout','layered');
