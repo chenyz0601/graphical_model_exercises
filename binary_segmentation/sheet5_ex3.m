@@ -88,8 +88,7 @@ end
 % gg = digraph(tt,ss,ww);
 % [mf,~,cut_s,cut_t] = maxflow(gg,1,M*N+2);
 % cut_s = cut_s(2:end);
-% cut_s = cut_s-1;e Boykov–
-Kolmogorov
+% cut_s = cut_s-1;e Boykov–Kolmogorov
 % seg_mask = ones(M,N);
 % seg_util = reshape(seg_mask,M*N,1);
 % seg_util(cut_s)=0;
