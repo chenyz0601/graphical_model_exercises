@@ -1,0 +1,32 @@
+function [value, cut_s] = do_mincut(F,B)
+    global M N mu;
+    mask = 2:M*N+1;
+    mask = reshape(mask, M, N);
+    t_mask = zeros(M, N, 5);
+    t_mask(:,:,1) = circshift(mask,[1,0]);
+    t_mask(:,:,2) = circshift(mask,[-1,0]);
+    t_mask(:,:,3) = circshift(mask,[0,1]);
+    t_mask(:,:,4) = circshift(mask,[0,-1]);
+    t_mask(:,:,5) = (M*N+2)*ones(M,N);
+    t_mask_util = reshape(t_mask,M*N,5);
+    t_mask_util = t_mask_util';
+    t2 = t_mask_util(:);
+    t1 = mask(:);
+    s1 = ones(M*N,1);
+    s2_util = repmat(t1',5,1);
+    s2 = s2_util(:);
+    t = [t1;t2];
+    s = [s1;s2];
+    w1 = F;
+    mask_w = reshape(B,M,N);
+    in_w = mu*ones(size(t_mask));
+    in_w(:,:,5) = mask_w;
+    in_w_util = reshape(in_w,M*N,5);
+    in_w_util = in_w_util';
+    w2 = in_w_util(:);
+    weights = [w1;w2];
+    G = digraph(s,t,weights);
+    [value,~,cut_s,~] = maxflow(G,1,M*N+2);
+    cut_s = cut_s(2:end);
+    cut_s = cut_s-1;
+end
